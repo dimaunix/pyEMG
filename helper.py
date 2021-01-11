@@ -19,4 +19,7 @@ def show_error(text):
 
 
 def get_templates():
-    return fnmatch.filter(os.listdir('games'), '*.json')
+    if os.path.exists('games'):
+        return fnmatch.filter(os.listdir('games'), '*.json')
+    else:
+        return []
