@@ -17,7 +17,7 @@ from messageDialog import MessageDialog
 class Ui(QMainWindow):
     def __init__(self):
         super(Ui, self).__init__()
-        uic.loadUi('mainWindow.ui', self)
+        uic.loadUi('UI/mainWindow.ui', self)
         self.btnColorPicker = self.findChild(QPushButton, 'btnColorPicker')
         self.btnColorPicker.clicked.connect(self.open_color_picker)
         self.comboSelectGame.activated[str].connect(self.parse_selected_template)
