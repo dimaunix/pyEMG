@@ -1,0 +1,23 @@
+{
+    "title": "Project Awesome ARMA Events",
+    "description": "Here are all our ARMA events for the coming weekend:",
+    "url": "https://www.reddit.com/r/ProjectMilSim",
+    "color": 16761611,
+    "thumbnail": {
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/ArmA_3_Logo_%28Black_Transparent%29.png/800px-ArmA_3_Logo_%28Black_Transparent%29.png"
+    },
+    "fields": [
+	  {
+        "name": "ARMA - January 1, 20:00 UTC",
+        "value": "[Happy New Year](https://redd.it/srgrhhw) - Host: Santa"
+      },
+	  {
+        "name": "ARMA - January 2, 20:00 UTC",
+        "value": "[Not so sober](https://redd.it/vodka) - Host: Alco"
+      },
+	  {
+        "name": "ARMA - January 3, 20:00 UTC",
+        "value": "[Seems good](https://redd.it/fit) - Host: PepeHandsUp"
+      }
+  	]
+ }
