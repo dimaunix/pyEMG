@@ -1,9 +1,9 @@
 import os
-from logging import exception
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5 import uic
 import pyperclip
+
 
 class MessageDialog(QWidget):
     def __init__(self):
