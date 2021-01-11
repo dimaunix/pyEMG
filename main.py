@@ -4,54 +4,55 @@ import sys
 from datetime import datetime
 from types import SimpleNamespace
 from collections import OrderedDict
-from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton
 
 import helper
 from eventWidget import MyEventWidget
-from messageDialog import MessageDialog
+from widgetMessage import WidgetMessage
+from UI.mainWindow import Ui_mainWindow
 
 
 class Ui(QMainWindow):
     def __init__(self):
         super(Ui, self).__init__()
-        uic.loadUi('UI/mainWindow.ui', self)
-        self.btnColorPicker = self.findChild(QPushButton, 'btnColorPicker')
-        self.btnColorPicker.clicked.connect(self.open_color_picker)
-        self.comboSelectGame.activated[str].connect(self.parse_selected_template)
+        self.ui = Ui_mainWindow()
+        self.ui.setupUi(self)
+        self.ui.btnColorPicker = self.findChild(QPushButton, 'btnColorPicker')
+        self.ui.btnColorPicker.clicked.connect(self.open_color_picker)
+        self.ui.comboSelectGame.activated[str].connect(self.parse_selected_template)
         templates = helper.get_templates()
         self.generate_combo_items(templates)
         self.parse_selected_template(self.selected_template())
-        self.btnAddEvent.clicked.connect(self.add_new_event)
-        self.btnRemoveEvent.clicked.connect(self.remove_current_event)
-        self.btnGenerate.clicked.connect(self.open_message_dialog)
+        self.ui.btnAddEvent.clicked.connect(self.add_new_event)
+        self.ui.btnRemoveEvent.clicked.connect(self.remove_current_event)
+        self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
         self.show()
 
     def open_message_dialog(self):
-        widget = MessageDialog()
         try:
-            widget.editMessage.setText("-ce " + self.get_generated_json())
+            widget = WidgetMessage()
+            widget.ui.editMessage.setText("-ce " + self.get_generated_json())
+            widget.show()
         except Exception as e:
             print(e)
-        widget.show()
 
     def get_message_dict(self):
         dict_message = OrderedDict()
-        dict_message["title"] = self.inputTitle.text()
-        dict_message["description"] = self.inputDescription.text()
-        dict_message["url"] = self.inputURL.text()
+        dict_message["title"] = self.ui.inputTitle.text()
+        dict_message["description"] = self.ui.inputDescription.text()
+        dict_message["url"] = self.ui.inputURL.text()
         dict_message["color"] = helper.get_decimal_color(QColor(self.get_current_color()))
-        dict_message["thumbnail"] = {"url": self.inputThumb.text()}
+        dict_message["thumbnail"] = {"url": self.ui.inputThumb.text()}
         dict_message["fields"] = []
-        for w in range(self.stackedWidget.count()):
+        for w in range(self.ui.stackedWidget.count()):
             if w > 0:
-                widget = self.stackedWidget.widget(w)
-                formatted_date_time = widget.dateTimeEvent.dateTime().toString("MMMM d, hh:mm") + " UTC"
+                widget = self.ui.stackedWidget.widget(w)
+                formatted_date_time = widget.ui.dateTimeEvent.dateTime().toString("MMMM d, hh:mm") + " UTC"
                 dict_message["fields"].append({
                     "name": self.selected_template() + " - " + formatted_date_time,
-                    "value": "[" + widget.inputEventName.text() + "](" + widget.inputEventURL.text() + ") - Host: " + widget.inputHost.text()
+                    "value": "[" + widget.ui.inputEventName.text() + "](" + widget.ui.inputEventURL.text() + ") - Host: " + widget.ui.inputHost.text()
                 })
         return dict_message
 
@@ -59,41 +60,41 @@ class Ui(QMainWindow):
         return json.dumps(self.get_message_dict(), indent=4)
 
     def remove_current_event(self):
-        self.stackedWidget.removeWidget(self.stackedWidget.currentWidget())
-        self.set_input_page_length()
+        self.ui.stackedWidget.removeWidget(self.ui.stackedWidget.currentWidget())
+        self.ui.set_input_page_length()
 
     def set_input_page_length(self):
-        self.inputPage.setMaximum(self.stackedWidget.count() - 1)
-        if self.stackedWidget.count() > 1:
-            self.inputPage.setMinimum(1)
-            self.inputPage.setMaximum(self.stackedWidget.count() - 1)
+        self.ui.inputPage.setMaximum(self.ui.stackedWidget.count() - 1)
+        if self.ui.stackedWidget.count() > 1:
+            self.ui.inputPage.setMinimum(1)
+            self.ui.inputPage.setMaximum(self.ui.stackedWidget.count() - 1)
         else:
-            self.inputPage.setMinimum(0)
-            self.inputPage.setMaximum(0)
+            self.ui.inputPage.setMinimum(0)
+            self.ui.inputPage.setMaximum(0)
 
     def add_new_event(self):
-        new_widget = MyEventWidget(self.stackedWidget)
-        self.stackedWidget.addWidget(new_widget)
+        new_widget = MyEventWidget(self.ui.stackedWidget)
+        self.ui.stackedWidget.addWidget(new_widget)
         self.set_input_page_length()
-        self.stackedWidget.setCurrentIndex(self.stackedWidget.count() - 1)
-        return new_widget
+        self.ui.stackedWidget.setCurrentIndex(self.ui.stackedWidget.count() - 1)
+        return new_widget.ui
 
     def get_current_color(self):
-        style = self.btnColorPicker.styleSheet()
+        style = self.ui.btnColorPicker.styleSheet()
         if style:
             return style.split(': ')[1]
 
     def selected_template(self):
-        return self.comboSelectGame.currentText()
+        return self.ui.comboSelectGame.currentText()
 
     def generate_combo_items(self, files):
         for file in files:
-            self.comboSelectGame.addItem(file.replace('.json', ''))
+            self.ui.comboSelectGame.addItem(file.replace('.json', ''))
 
     def clear_stacked_widgets(self):
-        for w in range(self.stackedWidget.count()):
+        for w in range(self.ui.stackedWidget.count()):
             if w > 0:
-                self.stackedWidget.removeWidget(self.stackedWidget.widget(w))
+                self.ui.stackedWidget.removeWidget(self.ui.stackedWidget.widget(w))
         self.set_input_page_length()
 
     @pyqtSlot(str)
@@ -107,16 +108,16 @@ class Ui(QMainWindow):
 
                 if obj:
                     if hasattr(obj, "title"):
-                        self.inputTitle.setText(obj.title)
+                        self.ui.inputTitle.setText(obj.title)
                     if hasattr(obj, "description"):
-                        self.inputDescription.setText(obj.description)
+                        self.ui.inputDescription.setText(obj.description)
                     if hasattr(obj, "url"):
-                        self.inputURL.setText(obj.url)
+                        self.ui.inputURL.setText(obj.url)
                     if hasattr(obj, "thumbnail") and hasattr(obj.thumbnail, "url"):
-                        self.inputThumb.setText(obj.thumbnail.url)
+                        self.ui.inputThumb.setText(obj.thumbnail.url)
                     if hasattr(obj, "color"):
                         color = hex(obj.color).replace("0x", "")
-                        self.btnColorPicker.setStyleSheet("background-color: #" + color)
+                        self.ui.btnColorPicker.setStyleSheet("background-color: #" + color)
                     if hasattr(obj, "fields") and isinstance(obj.fields, list):
                         length = len(obj.fields)
                         for i in range(length):
@@ -140,8 +141,8 @@ class Ui(QMainWindow):
 
     def open_color_picker(self):
         color = QColorDialog.getColor()
-        self.btnColorPicker.setStyleSheet("")
-        self.btnColorPicker.setStyleSheet("background-color: " + color.name())
+        self.ui.btnColorPicker.setStyleSheet("")
+        self.ui.btnColorPicker.setStyleSheet("background-color: " + color.name())
 
 
 app = QApplication(sys.argv)
