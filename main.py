@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from collections import OrderedDict
 from PyQt5.QtCore import pyqtSlot, QLocale
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton
+from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton, QWidget, QDialog
 
 import helper
 from eventWidget import MyEventWidget
@@ -32,9 +32,9 @@ class Ui(QMainWindow):
 
     def open_message_dialog(self):
         try:
-            widget = WidgetMessage()
-            widget.ui.editMessage.setText("-ce " + self.get_generated_json())
-            widget.show()
+            widget = WidgetMessage(self)
+            widget.dialog.ui.editMessage.setText("-ce " + self.get_generated_json())
+            widget.dialog.show()
         except Exception as e:
             print(e)
 
