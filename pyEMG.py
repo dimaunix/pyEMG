@@ -1,11 +1,12 @@
 import json
+import os
 import re
 import sys
 from datetime import datetime
 from types import SimpleNamespace
 from collections import OrderedDict
 from PyQt5.QtCore import pyqtSlot, QLocale
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton, QWidget, QDialog
 
 import helper
@@ -19,6 +20,9 @@ class Ui(QMainWindow):
         super(Ui, self).__init__()
         self.ui = Ui_mainWindow()
         self.ui.setupUi(self)
+        self.version = self.get_version()
+        self.setWindowTitle("Event Message Generator - " + self.version)
+        self.setWindowIcon(QIcon(helper.resource_path("icon.ico")))
         self.ui.btnColorPicker = self.findChild(QPushButton, 'btnColorPicker')
         self.ui.btnColorPicker.clicked.connect(self.open_color_picker)
         self.ui.comboSelectGame.activated[str].connect(self.parse_selected_template)
@@ -29,6 +33,16 @@ class Ui(QMainWindow):
         self.ui.btnRemoveEvent.clicked.connect(self.remove_current_event)
         self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
         self.show()
+
+
+
+    def get_version(self):
+        f = open(helper.resource_path("version.txt"), "r")
+        version = f.read()
+        if version:
+            return "v" + version
+        else:
+            return "unknown"
 
     def open_message_dialog(self):
         try:

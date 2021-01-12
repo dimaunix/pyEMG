@@ -1,5 +1,6 @@
 import fnmatch
 import os
+import sys
 
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QMessageBox
@@ -23,3 +24,11 @@ def get_templates():
         return fnmatch.filter(os.listdir('games'), '*.json')
     else:
         return []
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
+    return os.path.join(base_path, relative_path)
