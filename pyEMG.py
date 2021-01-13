@@ -1,12 +1,13 @@
 import json
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from types import SimpleNamespace
 from collections import OrderedDict
-from PyQt5.QtCore import pyqtSlot, QLocale
+
+from PyQt5.QtCore import pyqtSlot, QLocale, QTime, QDateTime
 from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton, QWidget, QDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton
 
 import helper
 from eventWidget import MyEventWidget
@@ -19,8 +20,8 @@ class Ui(QMainWindow):
         super(Ui, self).__init__()
         self.ui = Ui_mainWindow()
         self.ui.setupUi(self)
-        self.version = self.get_version()
-        self.setWindowTitle("Event Message Generator - " + self.version)
+        self.init_loading = True
+        self.setWindowTitle("Event Message Generator - " + helper.get_version())
         self.setWindowIcon(QIcon(helper.resource_path("icon.ico")))
         self.ui.btnColorPicker = self.findChild(QPushButton, 'btnColorPicker')
         self.ui.btnColorPicker.clicked.connect(self.open_color_picker)
@@ -34,14 +35,6 @@ class Ui(QMainWindow):
         self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
         self.show()
 
-    def get_version(self):
-        f = open(helper.resource_path("version.txt"), "r")
-        version = f.read()
-        if version:
-            return "v" + version
-        else:
-            return "unknown"
-
     def open_message_dialog(self):
         try:
             widget = WidgetMessage(self)
@@ -50,6 +43,7 @@ class Ui(QMainWindow):
         except Exception as e:
             print(e)
 
+    @property
     def get_message_dict(self):
         dict_message = OrderedDict()
         dict_message["title"] = self.ui.inputTitle.text()
@@ -74,7 +68,7 @@ class Ui(QMainWindow):
         return dict_message
 
     def get_generated_json(self):
-        return json.dumps(self.get_message_dict(), indent=4)
+        return json.dumps(self.get_message_dict, indent=4)
 
     def remove_current_event(self):
         widget = self.ui.stackedWidget.currentWidget()
@@ -91,6 +85,19 @@ class Ui(QMainWindow):
 
     def add_new_event(self):
         new_widget = MyEventWidget(self.ui.stackedWidget)
+        widget_count = self.ui.stackedWidget.count() - 1
+        datetime_event = datetime.now()
+
+        if widget_count > 0:
+            w = self.ui.stackedWidget.widget(widget_count)
+            datetime_event = self.locale.toDateTime(w.ui.dateTimeEvent.dateTime().toString("yyyy-MM-dd HH:mm:ss"),
+                                                    "yyyy-MM-dd HH:mm:ss")
+            datetime_event = datetime_event.addDays(1)
+        else:
+            friday = 4
+            datetime_event = QDateTime(datetime_event + timedelta(friday - datetime_event.weekday()))
+            datetime_event.setTime(QTime(20, 0))
+        new_widget.ui.dateTimeEvent.setDateTime(datetime_event)
         self.ui.stackedWidget.addWidget(new_widget)
         self.set_input_page_length()
         self.ui.stackedWidget.setCurrentIndex(self.ui.stackedWidget.count() - 1)
@@ -154,6 +161,7 @@ class Ui(QMainWindow):
                             new_widget.inputHost.setText(host)
             except json.decoder.JSONDecodeError:
                 helper.show_error("JSON in " + template + ".json is invalid")
+        self.init_loading = False
 
     def open_color_picker(self):
         color = QColorDialog.getColor()

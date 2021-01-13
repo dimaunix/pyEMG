@@ -32,3 +32,12 @@ def resource_path(relative_path):
     except Exception:
         base_path = os.environ.get("_MEIPASS2", os.path.abspath("."))
     return os.path.join(base_path, relative_path)
+
+
+def get_version():
+    f = open(resource_path("version.txt"), "r")
+    version = f.read()
+    if version:
+        return "v" + version
+    else:
+        return "unknown"
