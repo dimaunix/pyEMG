@@ -1,5 +1,4 @@
 import json
-import os
 import re
 import sys
 from datetime import datetime
@@ -26,6 +25,7 @@ class Ui(QMainWindow):
         self.ui.btnColorPicker = self.findChild(QPushButton, 'btnColorPicker')
         self.ui.btnColorPicker.clicked.connect(self.open_color_picker)
         self.ui.comboSelectGame.activated[str].connect(self.parse_selected_template)
+        self.locale = QLocale(QLocale.English, QLocale.UnitedStates)
         templates = helper.get_templates()
         self.generate_combo_items(templates)
         self.parse_selected_template(self.selected_template())
@@ -33,8 +33,6 @@ class Ui(QMainWindow):
         self.ui.btnRemoveEvent.clicked.connect(self.remove_current_event)
         self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
         self.show()
-
-
 
     def get_version(self):
         f = open(helper.resource_path("version.txt"), "r")
@@ -63,10 +61,12 @@ class Ui(QMainWindow):
         for w in range(self.ui.stackedWidget.count()):
             if w > 0:
                 widget = self.ui.stackedWidget.widget(w)
-                formatted_date_time = widget.ui.dateTimeEvent.dateTime().toString("MMMM d, hh:mm") + " UTC"
+                formatted_date_time = self.locale.toString(widget.ui.dateTimeEvent.dateTime(), "MMMM d, hh:mm") + " UTC"
                 dict_message["fields"].append({
                     "name": self.selected_template() + " - " + formatted_date_time,
-                    "value": "[" + widget.ui.inputEventName.text() + "](" + widget.ui.inputEventURL.text() + ") - Host: " + widget.ui.inputHost.text()
+                    "value": "[" + widget.ui.inputEventName.text() + "](" + widget.ui.inputEventURL.text() + ") - "
+                                                                                                             "Host: "
+                             + widget.ui.inputHost.text()
                 })
         return dict_message
 
@@ -142,9 +142,8 @@ class Ui(QMainWindow):
                             host = event_data.value.split("Host:")[1].strip()
                             title = reddit_link[0]
                             url = reddit_link[1]
-                            locale = QLocale(QLocale.English, QLocale.UnitedStates)
-                            date_time = locale.toDateTime(str(datetime.now().year) + " " + date_time_str,
-                                                          "yyyy MMMM d, hh:mm t")
+                            date_time = self.locale.toDateTime(str(datetime.now().year) + " " + date_time_str,
+                                                               "yyyy MMMM d, hh:mm t")
                             if date_time.isValid():
                                 new_widget.dateTimeEvent.setDateTime(date_time)
                             new_widget.inputEventName.setText(title)
