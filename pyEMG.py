@@ -43,6 +43,12 @@ class Ui(QMainWindow):
         except Exception as e:
             print(e)
 
+    def set_events_count(self):
+        if self.ui.stackedWidget.count()-1 != -1:
+            self.ui.lblCount.setNum(self.ui.stackedWidget.count()-1)
+        else:
+            self.ui.lblCount.setNum(0)
+
     @property
     def get_message_dict(self):
         dict_message = OrderedDict()
@@ -71,9 +77,11 @@ class Ui(QMainWindow):
         return json.dumps(self.get_message_dict, indent=4)
 
     def remove_current_event(self):
-        widget = self.ui.stackedWidget.currentWidget()
-        self.ui.stackedWidget.removeWidget(widget)
-        self.set_input_page_length()
+        if self.ui.stackedWidget.count() > 1:
+            widget = self.ui.stackedWidget.currentWidget()
+            self.ui.stackedWidget.removeWidget(widget)
+            self.set_input_page_length()
+            self.set_events_count()
 
     def set_input_page_length(self):
         if self.ui.stackedWidget.count() > 1:
@@ -101,6 +109,7 @@ class Ui(QMainWindow):
         self.ui.stackedWidget.addWidget(new_widget)
         self.set_input_page_length()
         self.ui.stackedWidget.setCurrentIndex(self.ui.stackedWidget.count() - 1)
+        self.set_events_count()
         return new_widget.ui
 
     def get_current_color(self):
