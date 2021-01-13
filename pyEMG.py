@@ -66,6 +66,7 @@ class Ui(QMainWindow):
                     value = "Open"
                 else:
                     value = "[" + widget.ui.inputEventName.text() + "](" + widget.ui.inputEventURL.text() + ") - Host: " + widget.ui.inputHost.text()
+
                 dict_message["fields"].append({
                     "name": self.selected_template() + " - " + formatted_date_time,
                     "value": value
@@ -76,11 +77,11 @@ class Ui(QMainWindow):
         return json.dumps(self.get_message_dict(), indent=4)
 
     def remove_current_event(self):
-        self.ui.stackedWidget.removeWidget(self.ui.stackedWidget.currentWidget())
-        self.ui.set_input_page_length()
+        widget = self.ui.stackedWidget.currentWidget()
+        self.ui.stackedWidget.removeWidget(widget)
+        self.set_input_page_length()
 
     def set_input_page_length(self):
-        self.ui.inputPage.setMaximum(self.ui.stackedWidget.count() - 1)
         if self.ui.stackedWidget.count() > 1:
             self.ui.inputPage.setMinimum(1)
             self.ui.inputPage.setMaximum(self.ui.stackedWidget.count() - 1)
