@@ -62,11 +62,13 @@ class Ui(QMainWindow):
             if w > 0:
                 widget = self.ui.stackedWidget.widget(w)
                 formatted_date_time = self.locale.toString(widget.ui.dateTimeEvent.dateTime(), "MMMM d, hh:mm") + " UTC"
+                if widget.ui.inputEventName.text() == "" and widget.ui.inputEventURL.text() == "" and widget.ui.inputHost.text() == "":
+                    value = "Open"
+                else:
+                    value = "[" + widget.ui.inputEventName.text() + "](" + widget.ui.inputEventURL.text() + ") - Host: " + widget.ui.inputHost.text()
                 dict_message["fields"].append({
                     "name": self.selected_template() + " - " + formatted_date_time,
-                    "value": "[" + widget.ui.inputEventName.text() + "](" + widget.ui.inputEventURL.text() + ") - "
-                                                                                                             "Host: "
-                             + widget.ui.inputHost.text()
+                    "value": value
                 })
         return dict_message
 
