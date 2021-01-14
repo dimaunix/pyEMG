@@ -4,7 +4,6 @@ import sys
 from datetime import datetime, timedelta
 from types import SimpleNamespace
 from collections import OrderedDict
-
 from PyQt5.QtCore import pyqtSlot, QLocale, QTime, QDateTime
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton
@@ -13,6 +12,7 @@ import helper
 from eventWidget import MyEventWidget
 from widgetMessage import WidgetMessage
 from UI.mainWindow import Ui_mainWindow
+from updater import Updater
 
 
 class Ui(QMainWindow):
@@ -33,10 +33,19 @@ class Ui(QMainWindow):
         self.ui.btnAddEvent.clicked.connect(self.add_new_event)
         self.ui.btnRemoveEvent.clicked.connect(self.remove_current_event)
         self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
-        self.ui.btnSaveTemplate.clicked.connect(self.saveTemplate)
+        self.ui.btnSaveTemplate.clicked.connect(self.save_template)
         self.show()
+        self.check_version()
 
-    def saveTemplate(self):
+    def check_version(self):
+        if helper.check_for_new_version():
+            try:
+                updater = Updater(self)
+                updater.widget.show()
+            except Exception as e:
+                print(e)
+
+    def save_template(self):
         json_template = self.get_generated_json()
         try:
             with open("games/" + self.ui.comboSelectGame.currentText() + ".json", "w") as new_file:
@@ -138,7 +147,7 @@ class Ui(QMainWindow):
     def clear_stacked_widgets(self):
         try:
             while self.ui.stackedWidget.count() > 1:
-                widget = self.ui.stackedWidget.widget(self.ui.stackedWidget.count()-1)
+                widget = self.ui.stackedWidget.widget(self.ui.stackedWidget.count() - 1)
                 self.ui.stackedWidget.removeWidget(widget)
         except Exception as e:
             print(e)

@@ -1,9 +1,10 @@
 import fnmatch
 import os
 import sys
-
+import requests
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QMessageBox
+from packaging import version
 
 
 def get_decimal_color(color: QColor):
@@ -19,13 +20,28 @@ def show_error(text):
     msg_box.exec()
 
 
-def show_message(text):
+def show_message(text, buttons=QMessageBox.Ok):
     msg_box = QMessageBox()
     msg_box.setIcon(QMessageBox.Information)
     msg_box.setText(text)
     msg_box.setWindowTitle("Notification")
-    msg_box.setStandardButtons(QMessageBox.Ok)
+    msg_box.setStandardButtons(buttons)
     msg_box.exec()
+
+
+def show_question(text, buttons=QMessageBox.Yes | QMessageBox.No):
+    msg_box = QMessageBox()
+    msg_box.setIcon(QMessageBox.Question)
+    ret = msg_box.question(msg_box, "Question", text, buttons)
+    return ret == QMessageBox.Yes
+
+
+def check_for_new_version():
+    try:
+        if version.parse(get_latest_version()) > version.parse(get_version()):
+            return show_question("New version is available! Do you want to update now?")
+    except Exception as e:
+        print("Couldn't check for latest version. Message: " + str(e))
 
 
 def get_icon():
@@ -54,3 +70,8 @@ def get_version():
         return "v" + version
     else:
         return "unknown"
+
+
+def get_latest_version():
+    response = requests.get("https://api.github.com/repos/dimaunix/pyEMG/releases/latest")
+    return response.json()["tag_name"]
