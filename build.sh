@@ -5,11 +5,25 @@ version=`cat version.txt`
 type="$1"
 
 readarray -td. array_version <<<"$version"
-if [ "$type" = "major" ] ; then array_version[0]="$((array_version[0]+1))"
-elif [ "$type" = "minor" ]; then array_version[1]="$((array_version[1]+1))"
-elif [ "$type" = "hotfix" ]; then array_version[2]="$((array_version[2]+1))"
+if [ "$type" = "major" ] ;
+  then
+    array_version[0]="$((array_version[0]+1))"
+    array_version[1]=0
+    array_version[2]=0
+    array_version[3]=0
+elif [ "$type" = "minor" ];
+  then
+    array_version[1]="$((array_version[1]+1))"
+    array_version[2]=0
+    array_version[3]=0
+elif [ "$type" = "hotfix" ];
+  then
+    array_version[2]="$((array_version[2]+1))"
+    array_version[3]=0
 elif [ "$type" = "patch" ];  then array_version[3]="$((array_version[3]+1))"
-else array_version[2]="$((array_version[2]+1))"
+else
+    array_version[2]="$((array_version[2]+1))"
+    array_version[3]=0
 fi
 
 new_version=$(join_by "." ${array_version[@]})
