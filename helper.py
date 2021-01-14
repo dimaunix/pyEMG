@@ -2,7 +2,7 @@ import fnmatch
 import os
 import sys
 
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QMessageBox
 
 
@@ -17,6 +17,19 @@ def show_error(text):
     msg_box.setWindowTitle("Warning!")
     msg_box.setStandardButtons(QMessageBox.Ok)
     msg_box.exec()
+
+
+def show_message(text):
+    msg_box = QMessageBox()
+    msg_box.setIcon(QMessageBox.Information)
+    msg_box.setText(text)
+    msg_box.setWindowTitle("Notification")
+    msg_box.setStandardButtons(QMessageBox.Ok)
+    msg_box.exec()
+
+
+def get_icon():
+    return QIcon(resource_path("icon.ico"))
 
 
 def get_templates():

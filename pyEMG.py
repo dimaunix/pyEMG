@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from collections import OrderedDict
 
 from PyQt5.QtCore import pyqtSlot, QLocale, QTime, QDateTime
-from PyQt5.QtGui import QColor, QIcon
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton
 
 import helper
@@ -22,7 +22,7 @@ class Ui(QMainWindow):
         self.ui.setupUi(self)
         self.init_loading = True
         self.setWindowTitle("Event Message Generator - " + helper.get_version())
-        self.setWindowIcon(QIcon(helper.resource_path("icon.ico")))
+        self.setWindowIcon(helper.get_icon())
         self.ui.btnColorPicker = self.findChild(QPushButton, 'btnColorPicker')
         self.ui.btnColorPicker.clicked.connect(self.open_color_picker)
         self.ui.comboSelectGame.activated[str].connect(self.parse_selected_template)
@@ -42,6 +42,7 @@ class Ui(QMainWindow):
             with open("games/" + self.ui.comboSelectGame.currentText() + ".json", "w") as new_file:
                 new_file.write(json_template)
                 new_file.close()
+                helper.show_message("Template was successfully saved!")
         except Exception as e:
             print(e)
 
