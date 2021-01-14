@@ -483,7 +483,11 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="page"/>
+      <widget class="QWidget" name="pageDefault">
+       <property name="accessibleName">
+        <string>pageDefault</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>
@@ -509,9 +513,6 @@
    <zorder>stackedWidget</zorder>
    <zorder>horizontalFrame</zorder>
    <zorder>btnGenerate</zorder>
-   <zorder>horizontalLayoutWidget_2</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
-   <zorder>horizontalLayoutWidget_3</zorder>
    <zorder>btnSaveTemplate</zorder>
   </widget>
  </widget>

@@ -33,7 +33,17 @@ class Ui(QMainWindow):
         self.ui.btnAddEvent.clicked.connect(self.add_new_event)
         self.ui.btnRemoveEvent.clicked.connect(self.remove_current_event)
         self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
+        self.ui.btnSaveTemplate.clicked.connect(self.saveTemplate)
         self.show()
+
+    def saveTemplate(self):
+        json_template = self.get_generated_json()
+        try:
+            with open("games/" + self.ui.comboSelectGame.currentText() + ".json", "w") as new_file:
+                new_file.write(json_template)
+                new_file.close()
+        except Exception as e:
+            print(e)
 
     def open_message_dialog(self):
         try:
@@ -44,8 +54,8 @@ class Ui(QMainWindow):
             print(e)
 
     def set_events_count(self):
-        if self.ui.stackedWidget.count()-1 != -1:
-            self.ui.lblCount.setNum(self.ui.stackedWidget.count()-1)
+        if self.ui.stackedWidget.count() - 1 != -1:
+            self.ui.lblCount.setNum(self.ui.stackedWidget.count() - 1)
         else:
             self.ui.lblCount.setNum(0)
 
@@ -125,9 +135,12 @@ class Ui(QMainWindow):
             self.ui.comboSelectGame.addItem(file.replace('.json', ''))
 
     def clear_stacked_widgets(self):
-        for w in range(self.ui.stackedWidget.count()):
-            if w > 0:
-                self.ui.stackedWidget.removeWidget(self.ui.stackedWidget.widget(w))
+        try:
+            while self.ui.stackedWidget.count() > 1:
+                widget = self.ui.stackedWidget.widget(self.ui.stackedWidget.count()-1)
+                self.ui.stackedWidget.removeWidget(widget)
+        except Exception as e:
+            print(e)
         self.set_input_page_length()
 
     @pyqtSlot(str)
@@ -135,8 +148,9 @@ class Ui(QMainWindow):
         self.clear_stacked_widgets()
         if template:
             try:
-                f = open("games/" + template + ".json", "r")
-                json_str = f.read()
+                with open("games/" + template + ".json", "r") as f:
+                    json_str = f.read()
+                    f.close()
                 obj = json.loads(json_str, object_hook=lambda d: SimpleNamespace(**d))
 
                 if obj:
