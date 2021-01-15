@@ -65,9 +65,9 @@ def resource_path(relative_path):
 
 def get_version():
     f = open(resource_path("version.txt"), "r")
-    version = f.read()
-    if version:
-        return "v" + version
+    version_number = (f.readline()).strip()
+    if version_number:
+        return "v" + version_number
     else:
         return "unknown"
 
