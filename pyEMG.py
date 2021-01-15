@@ -205,3 +205,5 @@ class Ui(QMainWindow):
 app = QApplication(sys.argv)
 window = Ui()
 app.exec_()
+
+#TODO Firebase binding
