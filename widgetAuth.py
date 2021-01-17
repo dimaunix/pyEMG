@@ -16,6 +16,10 @@ class WidgetAuth(QDialog):
         self.widget.ui.btnLogin.clicked.connect(self.authenticate)
 
     def authenticate(self):
-        if self.db.sign_in(self.widget.ui.inputEmail.text(), self.widget.ui.inputPassword.text()):
+        email = self.widget.ui.inputEmail.text()
+        password = self.widget.ui.inputPassword.text()
+        if self.db.sign_in(email, password):
+            if self.widget.ui.chkSave.isChecked():
+                helper.set_credentials(email, password)
             self.widget.close()
 

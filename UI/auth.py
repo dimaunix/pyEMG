@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_widgetAuth(object):
     def setupUi(self, widgetAuth):
         widgetAuth.setObjectName("widgetAuth")
-        widgetAuth.resize(203, 95)
+        widgetAuth.resize(201, 124)
         self.verticalLayout = QtWidgets.QVBoxLayout(widgetAuth)
         self.verticalLayout.setObjectName("verticalLayout")
         self.formLayout = QtWidgets.QFormLayout()
@@ -32,6 +32,10 @@ class Ui_widgetAuth(object):
         self.inputPassword.setEchoMode(QtWidgets.QLineEdit.Password)
         self.inputPassword.setObjectName("inputPassword")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.inputPassword)
+        self.chkSave = QtWidgets.QCheckBox(widgetAuth)
+        self.chkSave.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.chkSave.setObjectName("chkSave")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.chkSave)
         self.verticalLayout.addLayout(self.formLayout)
         self.btnLogin = QtWidgets.QPushButton(widgetAuth)
         self.btnLogin.setObjectName("btnLogin")
@@ -45,4 +49,5 @@ class Ui_widgetAuth(object):
         widgetAuth.setWindowTitle(_translate("widgetAuth", "Authenticate"))
         self.label.setText(_translate("widgetAuth", "Email"))
         self.label_2.setText(_translate("widgetAuth", "Password"))
+        self.chkSave.setText(_translate("widgetAuth", "save"))
         self.btnLogin.setText(_translate("widgetAuth", "Login"))

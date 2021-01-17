@@ -31,3 +31,12 @@ class DB:
     def set_data(self, game, data):
         self.db.child("games").child(game).child("data").set(data, self.token)
         self.db.child("games").child(game).child("changed_at").set(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), self.token)
+
+    def get_games(self):
+        try:
+            games = self.db.child("games").shallow().get(self.token)
+            if games:
+                return games.val()
+        except Exception as e:
+            print(e)
+            return None

@@ -103,7 +103,7 @@
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>../resources/save.png</normaloff>../resources/save.png</iconset>
+            <normaloff>C:/Users/Dimitry/.designer/resources/save.png</normaloff>C:/Users/Dimitry/.designer/resources/save.png</iconset>
           </property>
          </widget>
         </item>
@@ -114,7 +114,7 @@
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>../resources/login.png</normaloff>../resources/login.png</iconset>
+            <normaloff>C:/Users/Dimitry/.designer/resources/login.png</normaloff>C:/Users/Dimitry/.designer/resources/login.png</iconset>
           </property>
          </widget>
         </item>
@@ -128,7 +128,7 @@
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>../resources/refresh.png</normaloff>../resources/refresh.png</iconset>
+            <normaloff>C:/Users/Dimitry/.designer/resources/refresh.png</normaloff>C:/Users/Dimitry/.designer/resources/refresh.png</iconset>
           </property>
          </widget>
         </item>

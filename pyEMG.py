@@ -24,6 +24,7 @@ class Ui(QMainWindow):
         self.ui.setupUi(self)
         self.init_loading = True
         self.db = DB()
+        self.auto_login()
         self.setWindowTitle("Event Message Generator - " + helper.get_version())
         self.setWindowIcon(helper.get_icon())
         self.ui.btnRefresh.setIcon(QIcon(helper.resource_path("resources/refresh.png")))
@@ -33,7 +34,12 @@ class Ui(QMainWindow):
         self.ui.btnColorPicker.clicked.connect(self.open_color_picker)
         self.ui.comboSelectGame.activated[str].connect(self.parse_selected_template)
         self.locale = QLocale(QLocale.English, QLocale.UnitedStates)
-        templates = helper.get_templates()
+        if self.db.user:
+            templates = self.db.get_games()
+            if templates is None:
+                templates = helper.get_templates()
+        else:
+            templates = helper.get_templates()
         self.generate_combo_items(templates)
         self.parse_selected_template(self.selected_template())
         self.ui.btnAddEvent.clicked.connect(self.add_new_event)
@@ -41,8 +47,16 @@ class Ui(QMainWindow):
         self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
         self.ui.btnSaveTemplate.clicked.connect(self.save_data)
         self.ui.btnAuth.clicked.connect(self.open_auth)
+        self.ui.btnRefresh.clicked.connect(lambda d: self.parse_selected_template(self.selected_template()))
         self.show()
         self.check_version()
+
+    def auto_login(self):
+        email, password = helper.get_credentials()
+        if password is not None and email is not None:
+            if self.db.sign_in(email, password):
+                self.ui.btnAuth.setDisabled(True)
+                self.ui.btnRefresh.setDisabled(False)
 
     def open_auth(self):
         try:
@@ -185,9 +199,12 @@ class Ui(QMainWindow):
         self.clear_stacked_widgets()
         if template:
             try:
-                with open("games/" + template + ".json", "r") as f:
-                    json_str = f.read()
-                    f.close()
+                if self.db.user:
+                    json_str = self.db.get_data(template)
+                else:
+                    with open("games/" + template + ".json", "r") as f:
+                        json_str = f.read()
+                        f.close()
                 obj = json.loads(json_str, object_hook=lambda d: SimpleNamespace(**d))
 
                 if obj:
@@ -208,10 +225,12 @@ class Ui(QMainWindow):
                             new_widget = self.add_new_event()
                             event_data = obj.fields[i]
                             date_time_str = (event_data.name.split("-")[1]).strip()
-                            reddit_link = re.search(r"\[(.*?)]\((.*?)\)", event_data.value).groups()
-                            host = event_data.value.split("Host:")[1].strip()
-                            title = reddit_link[0]
-                            url = reddit_link[1]
+                            match = re.search(r"\[(.*?)]\((.*?)\)", event_data.value)
+                            if match:
+                                reddit_link = match.groups()
+                                host = event_data.value.split("Host:")[1].strip()
+                                title = reddit_link[0]
+                                url = reddit_link[1]
                             date_time = self.locale.toDateTime(str(datetime.now().year) + " " + date_time_str,
                                                                "yyyy MMMM d, hh:mm t")
                             if date_time.isValid():
@@ -221,6 +240,8 @@ class Ui(QMainWindow):
                             new_widget.inputHost.setText(host)
             except json.decoder.JSONDecodeError:
                 helper.show_error("JSON in " + template + ".json is invalid")
+            except Exception as e:
+                print(e)
         self.init_loading = False
 
     def open_color_picker(self):

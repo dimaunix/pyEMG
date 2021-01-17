@@ -2,6 +2,8 @@ import fnmatch
 import os
 import sys
 import requests
+import keyring
+import base64
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QMessageBox
 from packaging import version
@@ -70,11 +72,13 @@ def get_version():
         return "v" + version_number
     else:
         return "unknown"
+    f.close()
 
 
 def get_latest_version():
     response = requests.get("https://api.github.com/repos/dimaunix/pyEMG/releases/latest")
     return response.json()["tag_name"]
+
 
 def get_config():
     return {
@@ -86,3 +90,27 @@ def get_config():
         "messagingSenderId": "593853163742",
         "appId": "1:593853163742:web:5593bd3dac9060ed107a4f"
     }
+
+
+def set_credentials(email, password):
+    try:
+        keyring.set_password("pyEMG", email, password)
+        f = open(".l", "wb")
+        enc = base64.b64encode(email.encode())
+        f.write(enc)
+        f.close()
+    except Exception as e:
+        print(e)
+
+
+def get_credentials():
+    try:
+        f = open(".l", "rb")
+        b = f.read()
+        email = base64.b64decode(b)
+        password = keyring.get_password("pyEMG", email.decode())
+        f.close()
+        return email.decode(), password
+    except Exception as e:
+        print(e)
+        return None, None
