@@ -49,6 +49,7 @@ class Ui(QMainWindow):
             w = WidgetAuth({"parent": self, "db": self.db})
             w.widget.exec_()
             if self.db.user:
+                print(self.db.user)
                 self.ui.btnAuth.setDisabled(True)
         except Exception as e:
             print(e)
@@ -63,26 +64,23 @@ class Ui(QMainWindow):
 
     def save_data(self):
         json_template = self.get_generated_json()
-        if self.db.user:
-            self.save_db(json_template)
-            self.save_offline(json_template)
-        else:
-            self.save_offline(json_template)
+        try:
+            if self.db.user:
+                self.save_db(json_template)
+                self.save_offline(json_template)
+            else:
+                self.save_offline(json_template)
+            helper.show_message("Successfully saved!")
+        except Exception as e:
+            print(e)
 
     def save_db(self, json_data):
-        try:
-            self.db.set_data(self.ui.comboSelectGame.currentText(), json_data)
-        except Exception as e:
-            print(e)
+        self.db.set_data(self.ui.comboSelectGame.currentText(), json_data)
 
     def save_offline(self, json_data):
-        try:
-            with open("games/" + self.ui.comboSelectGame.currentText() + ".json", "w") as new_file:
-                new_file.write(json_data)
-                new_file.close()
-                helper.show_message("Template was successfully saved!")
-        except Exception as e:
-            print(e)
+        with open("games/" + self.ui.comboSelectGame.currentText() + ".json", "w") as new_file:
+            new_file.write(json_data)
+            new_file.close()
 
     def open_message_dialog(self):
         try:

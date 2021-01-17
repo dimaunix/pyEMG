@@ -18,3 +18,4 @@ class WidgetAuth(QDialog):
     def authenticate(self):
         if self.db.sign_in(self.widget.ui.inputEmail.text(), self.widget.ui.inputPassword.text()):
             self.widget.close()
+
