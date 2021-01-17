@@ -101,20 +101,12 @@
           <property name="text">
            <string>...</string>
           </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>C:/Users/Dimitry/.designer/resources/save.png</normaloff>C:/Users/Dimitry/.designer/resources/save.png</iconset>
-          </property>
          </widget>
         </item>
         <item>
          <widget class="QToolButton" name="btnAuth">
           <property name="text">
            <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>C:/Users/Dimitry/.designer/resources/login.png</normaloff>C:/Users/Dimitry/.designer/resources/login.png</iconset>
           </property>
          </widget>
         </item>
@@ -125,10 +117,6 @@
           </property>
           <property name="text">
            <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset>
-            <normaloff>C:/Users/Dimitry/.designer/resources/refresh.png</normaloff>C:/Users/Dimitry/.designer/resources/refresh.png</iconset>
           </property>
          </widget>
         </item>
