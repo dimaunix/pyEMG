@@ -7,20 +7,24 @@ import helper
 
 class DB:
     def __init__(self):
-        firebase = pyrebase.initialize_app(helper.get_config())
-        self.auth = self.db.auth()
-        self.db = firebase.database()
+        self.firebase = pyrebase.initialize_app(helper.get_config())
+        self.auth = self.firebase.auth()
+        self.db = self.firebase.database()
+        self.user = None
 
     def sign_in(self, email, password):
         try:
             self.auth.sign_in_with_email_and_password(email, password)
+            self.user = self.auth.current_user
+            return True
         except requests.HTTPError as e:
             error_json = e.args[1]
             error = json.loads(error_json)['error']['message']
             helper.show_error(error)
+        return False
 
     def get_data(self, game):
         return self.db.child("games").child(game).get()
 
-    def set_date(self, game, data):
+    def set_data(self, game, data):
         self.db.child('games').child(game).set(data)

@@ -39,7 +39,7 @@ class Ui(QMainWindow):
         self.ui.btnAddEvent.clicked.connect(self.add_new_event)
         self.ui.btnRemoveEvent.clicked.connect(self.remove_current_event)
         self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
-        self.ui.btnSaveTemplate.clicked.connect(self.save_template)
+        self.ui.btnSaveTemplate.clicked.connect(self.save_data)
         self.ui.btnAuth.clicked.connect(self.open_auth)
         self.show()
         self.check_version()
@@ -47,7 +47,9 @@ class Ui(QMainWindow):
     def open_auth(self):
         try:
             w = WidgetAuth({"parent": self, "db": self.db})
-            w.widget.show()
+            w.widget.exec_()
+            if self.db.user:
+                self.ui.btnAuth.setDisabled(True)
         except Exception as e:
             print(e)
 
@@ -59,11 +61,24 @@ class Ui(QMainWindow):
             except Exception as e:
                 print(e)
 
-    def save_template(self):
+    def save_data(self):
         json_template = self.get_generated_json()
+        if self.db.user:
+            self.save_db(json_template)
+            self.save_offline(json_template)
+        else:
+            self.save_offline(json_template)
+
+    def save_db(self, json_data):
+        try:
+            self.db.set_data(self.ui.comboSelectGame.currentText(), json_data)
+        except Exception as e:
+            print(e)
+
+    def save_offline(self, json_data):
         try:
             with open("games/" + self.ui.comboSelectGame.currentText() + ".json", "w") as new_file:
-                new_file.write(json_template)
+                new_file.write(json_data)
                 new_file.close()
                 helper.show_message("Template was successfully saved!")
         except Exception as e:
@@ -219,5 +234,3 @@ class Ui(QMainWindow):
 app = QApplication(sys.argv)
 window = Ui()
 app.exec_()
-
-# TODO Firebase binding

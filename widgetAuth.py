@@ -1,13 +1,13 @@
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QDialog
 import helper
 from UI.auth import Ui_widgetAuth
 
 
-class WidgetAuth(QWidget):
+class WidgetAuth(QDialog):
     def __init__(self, params):
         super(WidgetAuth, self).__init__(params.get("parent"))
-        self.widget = QWidget()
+        self.widget = QDialog()
         self.widget.setWindowIcon(helper.get_icon())
         self.widget.ui = Ui_widgetAuth()
         self.widget.ui.setupUi(self.widget)
@@ -16,4 +16,5 @@ class WidgetAuth(QWidget):
         self.widget.ui.btnLogin.clicked.connect(self.authenticate)
 
     def authenticate(self):
-        self.db.sign_in(self.widget.ui.inputEmail.text(), self.widget.ui.inputPassword.text())
+        if self.db.sign_in(self.widget.ui.inputEmail.text(), self.widget.ui.inputPassword.text()):
+            self.widget.close()
