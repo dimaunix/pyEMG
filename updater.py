@@ -45,9 +45,10 @@ class Updater(QWidget):
                 if self.backup_files():
                     if self.replace_files():
                         self.restart_app()
-        else:
-            self.widget.ui.btnDownload.setText("Try again")
-            self.widget.ui.btnDownload.setDisabled(False)
+                        return True
+        self.restore_backup()
+        self.widget.ui.btnDownload.setText("Try again")
+        self.widget.ui.btnDownload.setDisabled(False)
 
     def download(self, link, filename):
         self.widget.ui.labelStatus.setText("Downloading...")
@@ -88,6 +89,20 @@ class Updater(QWidget):
         except Exception as e:
             self.widget.ui.labelStatus.setText("Backup error: " + str(e))
         return False
+
+    def restore_backup(self):
+        if os.path.exists("backup"):
+            try:
+                dst = os.path.curdir
+                src = os.path.join(dst, "backup")
+                for item in os.listdir(src):
+                    s = os.path.join(src, item)
+                    d = os.path.join(dst, item)
+                    shutil.move(s, d)
+                return True
+            except Exception as e:
+                self.widget.ui.labelStatus.setText("Restoring backup error: " + str(e))
+            return False
 
     def replace_files(self):
         self.widget.ui.labelStatus.setText("Replacing files...")
