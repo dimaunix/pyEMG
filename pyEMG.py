@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from types import SimpleNamespace
 from collections import OrderedDict
 from PyQt5.QtCore import pyqtSlot, QLocale, QTime, QDateTime
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QColorDialog, QPushButton
 
 import helper
@@ -13,6 +13,8 @@ from eventWidget import MyEventWidget
 from widgetMessage import WidgetMessage
 from UI.mainWindow import Ui_mainWindow
 from updater import Updater
+from widgetAuth import WidgetAuth
+from db import DB
 
 
 class Ui(QMainWindow):
@@ -21,8 +23,12 @@ class Ui(QMainWindow):
         self.ui = Ui_mainWindow()
         self.ui.setupUi(self)
         self.init_loading = True
+        self.db = DB()
         self.setWindowTitle("Event Message Generator - " + helper.get_version())
         self.setWindowIcon(helper.get_icon())
+        self.ui.btnRefresh.setIcon(QIcon(helper.resource_path("resources/refresh.png")))
+        self.ui.btnAuth.setIcon(QIcon(helper.resource_path("resources/login.png")))
+        self.ui.btnSaveTemplate.setIcon(QIcon(helper.resource_path("resources/save.png")))
         self.ui.btnColorPicker = self.findChild(QPushButton, 'btnColorPicker')
         self.ui.btnColorPicker.clicked.connect(self.open_color_picker)
         self.ui.comboSelectGame.activated[str].connect(self.parse_selected_template)
@@ -34,8 +40,16 @@ class Ui(QMainWindow):
         self.ui.btnRemoveEvent.clicked.connect(self.remove_current_event)
         self.ui.btnGenerate.clicked.connect(self.open_message_dialog)
         self.ui.btnSaveTemplate.clicked.connect(self.save_template)
+        self.ui.btnAuth.clicked.connect(self.open_auth)
         self.show()
         self.check_version()
+
+    def open_auth(self):
+        try:
+            w = WidgetAuth({"parent": self, "db": self.db})
+            w.widget.show()
+        except Exception as e:
+            print(e)
 
     def check_version(self):
         if helper.check_for_new_version():
@@ -206,4 +220,4 @@ app = QApplication(sys.argv)
 window = Ui()
 app.exec_()
 
-#TODO Firebase binding
+# TODO Firebase binding
