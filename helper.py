@@ -9,6 +9,9 @@ import base64
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QMessageBox
 from packaging import version
+from keyring.backends import Windows
+
+keyring.set_keyring(Windows.WinVaultKeyring())
 
 
 def get_decimal_color(color: QColor):
@@ -45,7 +48,7 @@ def check_for_new_version():
         if version.parse(get_latest_version()) > version.parse(get_version()):
             return show_question("New version is available! Do you want to update now?")
     except Exception as e:
-        print("Couldn't check for latest version. Message: " + str(e))
+        write_log("Couldn't check for latest version. Message: " + str(e))
 
 
 def get_icon():
@@ -68,13 +71,12 @@ def resource_path(relative_path):
 
 
 def get_version():
-    f = open(resource_path("version.txt"), "r")
-    version_number = (f.readline()).strip()
-    if version_number:
-        return "v" + version_number
-    else:
-        return "unknown"
-    f.close()
+    with open(resource_path("version.txt"), "r") as f:
+        version_number = (f.readline()).strip()
+        if version_number:
+            return "v" + version_number
+        else:
+            return "unknown"
 
 
 def get_latest_version():
@@ -95,36 +97,48 @@ def get_config():
 
 
 def current_datetime():
-    return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.utcnow().strftime("%Y%m%d%H%M%S")
 
 
 def set_credentials(email, password):
     try:
         keyring.set_password("pyEMG", email, password)
-        f = open(".l", "wb")
-        enc = base64.b64encode(email.encode())
-        f.write(enc)
-        f.close()
+        with open(".l", "wb") as f:
+            enc = base64.b64encode(email.encode())
+            f.write(enc)
     except Exception as e:
-        print(e)
+        write_log(e)
 
 
 def get_credentials():
     try:
         if os.path.exists(".l"):
-            f = open(".l", "rb")
-            b = f.read()
-            email = base64.b64decode(b)
-            password = keyring.get_password("pyEMG", email.decode())
-            f.close()
-            return email.decode(), password
+            with open(".l", "rb") as f:
+                b = f.read()
+                email = base64.b64decode(b)
+                password = keyring.get_password("pyEMG", email.decode())
+                return email.decode(), password
         else:
             return None, None
     except Exception as e:
-        print(e)
+        write_log(e)
         return None, None
 
 
 def write_log(err):
-    with open("logs/" + current_datetime() + ".txt", "w") as f:
-        f.write(err)
+    is_str = isinstance(err, str)
+    if is_str:
+        crash = err
+    else:
+        crash = ["Error on line {}".format(sys.exc_info()[-1].tb_lineno), "\n", err]
+    if "PYCHARM_HOSTED" in os.environ:
+        print(crash)
+    else:
+        if os.path.exists("logs") is False:
+            os.mkdir("logs")
+        with open(r"logs/" + current_datetime() + ".txt", "w") as f:
+            if is_str:
+                f.write(crash)
+            else:
+                for i in crash:
+                    f.write(str(i))

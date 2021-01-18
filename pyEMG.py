@@ -15,7 +15,8 @@ from UI.mainWindow import Ui_mainWindow
 from updater import Updater
 from widgetAuth import WidgetAuth
 from db import DB
-
+from keyring import get_keyring
+get_keyring()
 
 class Ui(QMainWindow):
     def __init__(self):
@@ -63,18 +64,18 @@ class Ui(QMainWindow):
             w = WidgetAuth({"parent": self, "db": self.db})
             w.widget.exec_()
             if self.db.user:
-                print(self.db.user)
                 self.ui.btnAuth.setDisabled(True)
-        except Exception as e:
-            print(e)
+                self.ui.btnRefresh.setDisabled(False)
+        except Exception as ex:
+            helper.write_log(ex)
 
     def check_version(self):
         if helper.check_for_new_version():
             try:
                 updater = Updater(self)
                 updater.widget.show()
-            except Exception as e:
-                print(e)
+            except Exception as ex:
+                helper.write_log(ex)
 
     def save_data(self):
         json_template = self.get_generated_json()
@@ -85,8 +86,8 @@ class Ui(QMainWindow):
             else:
                 self.save_offline(json_template)
             helper.show_message("Successfully saved!")
-        except Exception as e:
-            print(e)
+        except Exception as ex:
+            helper.write_log(ex)
 
     def save_db(self, json_data):
         self.db.set_data(self.ui.comboSelectGame.currentText(), json_data)
@@ -101,8 +102,8 @@ class Ui(QMainWindow):
             widget = WidgetMessage(self)
             widget.dialog.ui.editMessage.setText("-ce " + self.get_generated_json())
             widget.dialog.show()
-        except Exception as e:
-            print(e)
+        except Exception as ex:
+            helper.write_log(ex)
 
     def set_events_count(self):
         if self.ui.stackedWidget.count() - 1 != -1:
@@ -190,8 +191,8 @@ class Ui(QMainWindow):
             while self.ui.stackedWidget.count() > 1:
                 widget = self.ui.stackedWidget.widget(self.ui.stackedWidget.count() - 1)
                 self.ui.stackedWidget.removeWidget(widget)
-        except Exception as e:
-            print(e)
+        except Exception as ex:
+            helper.write_log(ex)
         self.set_input_page_length()
 
     @pyqtSlot(str)
@@ -202,7 +203,7 @@ class Ui(QMainWindow):
                 if self.db.user:
                     json_str = self.db.get_data(template)
                 else:
-                    with open("games/" + template + ".json", "r") as f:
+                    with open("games\\" + template + ".json", "r") as f:
                         json_str = f.read()
                         f.close()
                 obj = json.loads(json_str, object_hook=lambda d: SimpleNamespace(**d))
@@ -240,8 +241,8 @@ class Ui(QMainWindow):
                             new_widget.inputHost.setText(host)
             except json.decoder.JSONDecodeError:
                 helper.show_error("JSON in " + template + ".json is invalid")
-            except Exception as e:
-                print(e)
+            except Exception as exc:
+                helper.write_log(exc)
         self.init_loading = False
 
     def open_color_picker(self):
@@ -254,5 +255,5 @@ try:
     app = QApplication(sys.argv)
     window = Ui()
     app.exec_()
-except Exception as e:
-    helper.write_log("Exception: " + e)
+except Exception as ex:
+    helper.write_log(ex)
