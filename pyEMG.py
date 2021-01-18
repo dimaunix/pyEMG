@@ -250,6 +250,9 @@ class Ui(QMainWindow):
         self.ui.btnColorPicker.setStyleSheet("background-color: " + color.name())
 
 
-app = QApplication(sys.argv)
-window = Ui()
-app.exec_()
+try:
+    app = QApplication(sys.argv)
+    window = Ui()
+    app.exec_()
+except Exception as e:
+    helper.write_log("Exception: " + e)
