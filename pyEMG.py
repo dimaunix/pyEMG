@@ -35,13 +35,7 @@ class Ui(QMainWindow):
         self.ui.btnColorPicker.clicked.connect(self.open_color_picker)
         self.ui.comboSelectGame.activated[str].connect(self.parse_selected_template)
         self.locale = QLocale(QLocale.English, QLocale.UnitedStates)
-        if self.db.user:
-            templates = self.db.get_games()
-            if templates is None:
-                templates = helper.get_templates()
-        else:
-            templates = helper.get_templates()
-        self.generate_combo_items(templates)
+        self.generate_combo_items()
         self.parse_selected_template(self.selected_template())
         self.ui.btnAddEvent.clicked.connect(self.add_new_event)
         self.ui.btnRemoveEvent.clicked.connect(self.remove_current_event)
@@ -64,6 +58,7 @@ class Ui(QMainWindow):
             w = WidgetAuth({"parent": self, "db": self.db})
             w.widget.exec_()
             if self.db.user:
+                self.generate_combo_items()
                 self.ui.btnAuth.setDisabled(True)
                 self.ui.btnRefresh.setDisabled(False)
         except Exception as ex:
@@ -182,8 +177,15 @@ class Ui(QMainWindow):
     def selected_template(self):
         return self.ui.comboSelectGame.currentText()
 
-    def generate_combo_items(self, files):
-        for file in files:
+    def generate_combo_items(self):
+        self.ui.comboSelectGame.clear()
+        if self.db.user:
+            templates = self.db.get_games()
+            if templates is None:
+                templates = helper.get_templates()
+        else:
+            templates = helper.get_templates()
+        for file in templates:
             self.ui.comboSelectGame.addItem(file.replace('.json', ''))
 
     def clear_stacked_widgets(self):
