@@ -1,5 +1,5 @@
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QDialog
+from PyQt5.QtWidgets import QDialog
 import helper
 from UI.auth import Ui_widgetAuth
 
