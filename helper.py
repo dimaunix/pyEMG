@@ -1,6 +1,8 @@
 import fnmatch
 import os
 import sys
+from datetime import datetime
+
 import requests
 import keyring
 import base64
@@ -92,6 +94,10 @@ def get_config():
     }
 
 
+def current_datetime():
+    return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+
 def set_credentials(email, password):
     try:
         keyring.set_password("pyEMG", email, password)
@@ -105,12 +111,20 @@ def set_credentials(email, password):
 
 def get_credentials():
     try:
-        f = open(".l", "rb")
-        b = f.read()
-        email = base64.b64decode(b)
-        password = keyring.get_password("pyEMG", email.decode())
-        f.close()
-        return email.decode(), password
+        if os.path.exists(".l"):
+            f = open(".l", "rb")
+            b = f.read()
+            email = base64.b64decode(b)
+            password = keyring.get_password("pyEMG", email.decode())
+            f.close()
+            return email.decode(), password
+        else:
+            return None, None
     except Exception as e:
         print(e)
         return None, None
+
+
+def write_log(err):
+    with open("logs/" + current_datetime() + ".txt", "w") as f:
+        f.write(err)

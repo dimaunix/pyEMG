@@ -1,4 +1,3 @@
-from datetime import datetime
 import json
 import pyrebase
 import requests
@@ -30,7 +29,7 @@ class DB:
 
     def set_data(self, game, data):
         self.db.child("games").child(game).child("data").set(data, self.token)
-        self.db.child("games").child(game).child("changed_at").set(datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), self.token)
+        self.db.child("games").child(game).child("changed_at").set(helper.current_datetime(), self.token)
 
     def get_games(self):
         try:
