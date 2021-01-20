@@ -22,7 +22,7 @@ elif [ "$type" = "hotfix" ];
     array_version[3]=0
 elif [ "$type" = "patch" ];  then array_version[3]="$((array_version[3]+1))"
 else
-    readarray -td. array_version <<<"$type"
+    readarray -td. array_version <<<"$version"
 fi
 
 new_version=$(join_by "." ${array_version[@]})
