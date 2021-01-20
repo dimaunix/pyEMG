@@ -14,6 +14,6 @@ on "arrow down" button in the red popup with warning and press "keep it".
 This is because I use "pyinstaller" for building exe file for my project.
 Python is really fast and easy language to write programs and virus developers take advantage of that.
 They use the same tools, normal developers use. Like any Antivirus just flags packaging tools like "pyinstaller", as it was
-used for packaging several viruses. So from their perspective, anything builded by that is virus, until it is wrong proven, which means
+used for packaging several viruses. So from their perspective: anything builded with help of tools like that is a virus, until it is wrong proven, which means
 everytime I build new release, I need to upload my files to them and tell them to analyze it as it is "false report". It can take a lot of time, if you are not a company, but just "open source" developer.
 Plus, as said above about chrome(browser blocking), I don't sign it with a certificate. 
