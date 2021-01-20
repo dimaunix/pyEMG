@@ -5,7 +5,7 @@ Event Message Generator for Project Awesome community bot
 
 I don't sign my builds with a code certificate, as it's open source project. 
 The Cheapest certificate goes around 60$ anual and unless you want to donate me for it, I will not use 
-certificate for this project, there won't be any included. You can still download files, if you click 
+certificate for this project. You can still download files, if you click 
 on "arrow down" button in the red popup with warning and press "keep it".
 
 
