@@ -234,13 +234,14 @@ class Ui(QMainWindow):
                                 host = event_data.value.split("Host:")[1].strip()
                                 title = reddit_link[0]
                                 url = reddit_link[1]
+                                new_widget.inputEventName.setText(title)
+                                new_widget.inputEventURL.setText(url)
+                                new_widget.inputHost.setText(host)
                             date_time = self.locale.toDateTime(str(datetime.now().year) + " " + date_time_str,
                                                                "yyyy MMMM d, hh:mm t")
                             if date_time.isValid():
                                 new_widget.dateTimeEvent.setDateTime(date_time)
-                            new_widget.inputEventName.setText(title)
-                            new_widget.inputEventURL.setText(url)
-                            new_widget.inputHost.setText(host)
+
             except json.decoder.JSONDecodeError:
                 helper.show_error("JSON in " + template + ".json is invalid")
             except Exception as exc:
