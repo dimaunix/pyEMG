@@ -161,7 +161,8 @@ class Ui(QMainWindow):
         else:
             friday = 4
             datetime_event = QDateTime(datetime_event + timedelta(friday - datetime_event.weekday()))
-            datetime_event.setTime(QTime(20, 0))
+            is_dst = datetime_event.isDaylightTime()
+            datetime_event.setTime(QTime(19 if is_dst else 20, 0))
         new_widget.ui.dateTimeEvent.setDateTime(datetime_event)
         self.ui.stackedWidget.addWidget(new_widget)
         self.set_input_page_length()
